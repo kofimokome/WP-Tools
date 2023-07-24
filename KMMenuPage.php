@@ -70,7 +70,7 @@ if ( ! class_exists( 'KMMenuPage' ) ) {
 				$this->menu_slug,
 				$this->function,
 				$this->icon_url,
-				$this->position
+				intval( $this->position )
 
 			);
 

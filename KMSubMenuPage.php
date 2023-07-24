@@ -32,7 +32,7 @@ if ( ! class_exists( 'KMSubMenuPage' ) ) {
 				'menu_title'  => '',
 				'capability'  => '',
 				'menu_slug'   => '',
-				'position'    => null,
+				'position'    => 0,
 				'function'    => null,
 				'use_tabs'    => false
 			);
@@ -48,7 +48,7 @@ if ( ! class_exists( 'KMSubMenuPage' ) ) {
 			$this->menu_title  = $menu_title;
 			$this->capability  = $capability;
 			$this->menu_slug   = $menu_slug;
-			$this->position    = $position;
+			$this->position    = intval($position);
 			$this->parent_slug = $parent_slug;
 			$this->function    = $data['function'];
 			if ( $data['use_tabs'] ) {
@@ -125,7 +125,7 @@ if ( ! class_exists( 'KMSubMenuPage' ) ) {
 				$this->capability,
 				$this->menu_slug,
 				$this->function,
-				$this->position
+				intval( $this->position )
 			);
 		}
 
