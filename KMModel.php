@@ -364,7 +364,7 @@ if ( ! class_exists( 'KMModel' ) ) {
 			global $wpdb;
 			$wpdb->show_errors = true;
 			$table_name        = self::getTableName();
-			$this_migration    = Migration::getMigration( $table_name, true );
+			$this_migration    = KMMigration::getMigration( $table_name, true );
 			if ( $this->id == 0 ) { // we are creating
 				if ( static::$timestamps ) {
 					$fields['created_at'] = date( "Y-m-d H:i" );
@@ -399,7 +399,9 @@ if ( ! class_exists( 'KMModel' ) ) {
 			if ( $table_name == '' ) {
 				$model      = get_called_class();
 				$table_name = strtolower( preg_replace( '/(?<!^)[A-Z]/', '_$0', $model ) );
-				$table_name = strtolower( str_replace( 'omhc\\', '', $table_name ) );
+				if(sizeof($names = explode('\\',$table_name)) > 0){
+					$table_name = $names[1];
+				}
 				$table_name = ltrim( $table_name, '_' );
 				$table_name = Plural( $table_name );
 
