@@ -115,7 +115,6 @@ if ( ! class_exists( 'KMModel' ) ) {
 			} else { // query does not require pagination
 				$query .= $additions;
 				$data  = self::getResults( $query );
-				var_dump($query);
 			}
 //		var_dump( $query );
 			// reset query variables;
