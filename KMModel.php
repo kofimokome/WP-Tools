@@ -115,6 +115,7 @@ if ( ! class_exists( 'KMModel' ) ) {
 			} else { // query does not require pagination
 				$query .= $additions;
 				$data  = self::getResults( $query );
+				var_dump($query);
 			}
 //		var_dump( $query );
 			// reset query variables;
@@ -404,10 +405,9 @@ if ( ! class_exists( 'KMModel' ) ) {
 				}
 				$table_name = ltrim( $table_name, '_' );
 				$table_name = Plural( $table_name );
-
+				$table_name = $env['TABLE_PREFIX'] . $table_name;
 			}
 
-			$table_name = $env['TABLE_PREFIX'] . $table_name;
 
 			return $table_name;
 
