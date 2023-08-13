@@ -265,8 +265,22 @@ if ( ! class_exists( 'KMRoute' ) ) {
 				$chars       = explode( '/', $plugin_basename );
 				if ( sizeof( $chars ) > 0 ) {
 					$plugin_basename = $chars[0];
+
 					return $plugin_path . $plugin_basename;
 				}
+			}
+			throw new Exception( 'Could not get plugin directory' );
+		}
+
+		public static function route( string $name, array $params = [] ): string {
+			if ( $route = self::getRoute( $name ) ) {
+				foreach ( $params as $key => $value ) {
+					$route = str_replace( ':' . $key, $value, $route );
+				}
+
+				return site_url( $route );
+			} else {
+				return '';
 			}
 		}
 
