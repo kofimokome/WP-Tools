@@ -29,7 +29,7 @@ if ( ! class_exists( 'KMModel' ) ) {
 		 * Finds a model in the database
 		 * Returns boolean|object
 		 */
-		public static function find( int $id ): KMModel|null {
+		public static function find( int $id ): ?KMModel {
 			return self::where( "id", "=", $id )->first();
 		}
 
@@ -287,9 +287,11 @@ if ( ! class_exists( 'KMModel' ) ) {
 		 * @since 1.0.0
 		 */
 		public static function innerJoin( string $table_name ): KMModel {
+			global $wpdb;
+
 			$env              = KMEnv::getEnv();
-			self::$join       .= ' INNER JOIN ' . $env['TABLE_PREFIX'] . $table_name . ' ';
-			self::$join_table = $env['TABLE_PREFIX'] . $table_name;
+			self::$join       .= ' INNER JOIN ' . $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name . ' ';
+			self::$join_table = $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name;
 
 			return new static();
 		}
@@ -301,7 +303,7 @@ if ( ! class_exists( 'KMModel' ) ) {
 		public static function leftJoin( string $table_name ): KMModel {
 			global $wpdb;
 			$env    = KMEnv::getEnv();
-			$table  = $env['TABLE_PREFIX'] . $table_name;
+			$table  = $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name;
 			$prefix = $wpdb->prefix;
 			if ( strpos( $table_name, $prefix ) !== false ) {
 				$table = $table_name;
@@ -317,9 +319,11 @@ if ( ! class_exists( 'KMModel' ) ) {
 		 * @since 1.0.0
 		 */
 		public static function rightJoin( string $table_name ): KMModel {
+			global $wpdb;
+
 			$env              = KMEnv::getEnv();
-			self::$join       .= ' RIGHT JOIN ' . $env['TABLE_PREFIX'] . $table_name . ' ';
-			self::$join_table = $env['TABLE_PREFIX'] . $table_name;
+			self::$join       .= ' RIGHT JOIN ' . $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name . ' ';
+			self::$join_table = $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name;
 
 			return new static();
 		}
@@ -394,17 +398,19 @@ if ( ! class_exists( 'KMModel' ) ) {
 		 * @since 1.0.0
 		 */
 		private static function getTableName(): string {
+			global $wpdb;
+
 			$env        = KMEnv::getEnv();
 			$table_name = static::$table_name;
 			if ( $table_name == '' ) {
 				$model      = get_called_class();
 				$table_name = strtolower( preg_replace( '/(?<!^)[A-Z]/', '_$0', $model ) );
-				if(sizeof($names = explode('\\',$table_name)) > 0){
+				if ( sizeof( $names = explode( '\\', $table_name ) ) > 0 ) {
 					$table_name = $names[1];
 				}
 				$table_name = ltrim( $table_name, '_' );
 				$table_name = Plural( $table_name );
-				$table_name = $env['TABLE_PREFIX'] . $table_name;
+				$table_name = $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name;
 			}
 
 
