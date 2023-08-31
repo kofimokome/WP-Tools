@@ -15,8 +15,10 @@ if ( ! class_exists( 'KMMigration' ) ) {
 		private int $revision_id = 0;
 
 		public function __construct( string $table_name, bool $is_update = false ) {
+			global $wpdb;
+
 			$env              = KMEnv::getEnv();
-			$this->table_name = $env['TABLE_PREFIX'] . $table_name;
+			$this->table_name = $wpdb->prefix . trim($env['TABLE_PREFIX']). $table_name;
 			$this->is_update  = $is_update;
 			$this->columns    = [];
 			if ( $is_update ) {
@@ -81,13 +83,13 @@ if ( ! class_exists( 'KMMigration' ) ) {
 			global $wpdb;
 
 			$env               = KMEnv::getEnv();
-			$last_revision_run = get_option( $env['TABLE_PREFIX'] . '_last_revision', 0 );
+			$last_revision_run = get_option( $wpdb->prefix . trim($env['TABLE_PREFIX']). '_last_revision', 0 );
 			if ( $last_revision_run < $this->revision_id ) {
 				foreach ( $this->columns as $column ) {
 					$query = $wpdb->prepare( "ALTER TABLE `%1s` %1s", [ $this->table_name, $column->toString() ] );
 					$wpdb->query( $query );
 				}
-				update_option( $env['TABLE_PREFIX'] . '_last_revision', $this->revision_id );
+				update_option( $wpdb->prefix . trim($env['TABLE_PREFIX']). '_last_revision', $this->revision_id );
 			}
 		}
 
@@ -99,8 +101,10 @@ if ( ! class_exists( 'KMMigration' ) ) {
 		 * Creates a table
 		 */
 		public static function runMigration( string $table_name ) {
+			global $wpdb;
+
 			$env        = KMEnv::getEnv();
-			$table_name = $env['TABLE_PREFIX'] . trim( $table_name );
+			$table_name = $wpdb->prefix . trim($env['TABLE_PREFIX']). trim( $table_name );
 			foreach ( self::$migrations as $migration ) {
 				if ( $migration->getTableName() == $table_name ) {
 					$migration->up();
@@ -148,8 +152,10 @@ if ( ! class_exists( 'KMMigration' ) ) {
 		 * Delete a particular table
 		 */
 		public static function drop( string $table_name ) {
+			global $wpdb;
+
 			$env        = KMEnv::getEnv();
-			$table_name = $env['TABLE_PREFIX'] . trim( $table_name );
+			$table_name = $wpdb->prefix . trim($env['TABLE_PREFIX']). trim( $table_name );
 			foreach ( self::$migrations as $migration ) {
 				if ( $migration->getTableName() == $table_name ) {
 					$migration->down();
@@ -193,11 +199,13 @@ if ( ! class_exists( 'KMMigration' ) ) {
 		 * Deletes all tables
 		 */
 		public static function dropAll(): void {
+			global $wpdb;
+
 			$env = KMEnv::getEnv();
 			foreach ( self::$migrations as $migration ) {
 				$migration->down();
 			}
-			update_option( $env['TABLE_PREFIX'] . '_last_revision', 0 );
+			update_option( $wpdb->prefix . trim($env['TABLE_PREFIX']). '_last_revision', 0 );
 
 		}
 
@@ -225,8 +233,10 @@ if ( ! class_exists( 'KMMigration' ) ) {
 		 * @author kofimokome
 		 */
 		public static function getMigration( string $table_name, bool $is_full_table_name = false ) {
+			global $wpdb;
+
 			$env        = KMEnv::getEnv();
-			$table_name = $is_full_table_name ? $table_name : $env['TABLE_PREFIX'] . trim( $table_name );
+			$table_name = $is_full_table_name ? $table_name : $wpdb->prefix . trim($env['TABLE_PREFIX']). trim( $table_name );
 			foreach ( self::$migrations as $migration ) {
 				if ( $migration->getTableName() == $table_name ) {
 					return $migration;
