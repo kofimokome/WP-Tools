@@ -2,6 +2,8 @@
 
 These are a set of helper classes that will make WordPress plugin/theme development easier
 
+Read this [Article on Medium](https://medium.com/@kofimokome/simplifying-wordpress-plugin-development-using-object-oriented-programming-part-1-bootstrapping-f939f435d31b) to find out how to use the other tools.
+
 ## Examples
 
 ### 1. Menu page without sub menu page
