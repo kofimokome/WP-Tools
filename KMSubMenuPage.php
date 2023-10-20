@@ -10,6 +10,7 @@
 
 if ( ! class_exists( 'KMSubMenuPage' ) ) {
 
+	#[AllowDynamicProperties]
 	class KMSubMenuPage {
 		private $page_title;
 		private $menu_title;
@@ -48,7 +49,7 @@ if ( ! class_exists( 'KMSubMenuPage' ) ) {
 			$this->menu_title  = $menu_title;
 			$this->capability  = $capability;
 			$this->menu_slug   = $menu_slug;
-			$this->position    = intval($position);
+			$this->position    = intval( $position );
 			$this->parent_slug = $parent_slug;
 			$this->function    = $data['function'];
 			if ( $data['use_tabs'] ) {

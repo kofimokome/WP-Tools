@@ -8,6 +8,7 @@
  * @author kofi mokome
  */
 if ( ! class_exists( 'KMMenuPage' ) ) {
+	#[AllowDynamicProperties]
 	class KMMenuPage {
 		private $page_title;
 		private $menu_title;

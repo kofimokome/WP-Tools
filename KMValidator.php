@@ -1,12 +1,38 @@
 <?php
 /**
  * @author kofimokome
-*/
+ */
 if ( ! class_exists( 'KMValidator' ) ) {
 
+	#[AllowDynamicProperties]
 	class KMValidator {
-		private static array $rules = [];
-		private static array $data = [];
+		private $rules = [];
+		private $data = [];
+
+		public function __call( $method, $arguments ) {
+
+			if ( $method == 'validate' ) {
+				return $this->validateData( ...$arguments );
+			} else {
+				return $this->$method( ...$arguments );
+			}
+		}
+
+		public static function __callStatic( $method, $arguments ) {
+			$instance = new KMValidator();
+
+			switch($method){
+				case 'make':
+					return $instance->makeRules( ...$arguments );
+					break;
+				case 'validate':
+					return $instance->validateData( ...$arguments );
+					break;
+				default:
+					return $instance->$method( ...$arguments );
+					break;
+			}
+		}
 
 		/**
 		 * @since  1.0.0
@@ -14,14 +40,14 @@ if ( ! class_exists( 'KMValidator' ) ) {
 		 * Rules: required, bool, int, numeric, pdf
 		 * @author kofimokome
 		 */
-		public static function make( $rules, $data ): KMValidator {
-			self::$rules = $rules;
-			self::$data  = $data;
+		private function makeRules( $rules, $data ): KMValidator {
+			$this->rules = $rules;
+			$this->data  = $data;
 
-			return new static();
+			return $this;
 		}
 
-		private static function isFile( $data ): bool {
+		private function isFile( $data ): bool {
 			if ( is_array( $data ) && isset( $data['type'] ) && isset( $data['name'] ) && isset( $data['size'] ) && isset( $data['tmp_name'] ) ) {
 				return true;
 			}
@@ -35,13 +61,13 @@ if ( ! class_exists( 'KMValidator' ) ) {
 		 * Rules: required, bool, int, numeric, pdf
 		 * @author kofimokome
 		 */
-		public static function validate( $rules = [], $data = [] ): bool {
+		public function validateData( $rules = [], $data = [] ): bool {
 
 			if ( sizeof( $rules ) == 0 ) {
-				$rules = self::$rules;
+				$rules = $this->rules;
 			}
 			if ( sizeof( $data ) == 0 ) {
-				$data = self::$data;
+				$data = $this->data;
 			}
 			foreach ( $rules as $field => $rule ) {
 				$rules_to_check = explode( '|', $rule );
@@ -110,8 +136,8 @@ if ( ! class_exists( 'KMValidator' ) ) {
 			}
 
 //		return $data;
-			self::$rules = [];
-			self::$data  = [];
+			$this->rules = [];
+			$this->data  = [];
 
 			return true;
 		}

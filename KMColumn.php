@@ -5,15 +5,16 @@
 
 if ( ! class_exists( 'KMColumn' ) ) {
 
+	#[AllowDynamicProperties]
 	class KMColumn {
-		private string $name;
-		private array $attributes;
-		private bool $is_update;
-		private bool $is_delete;
-		private bool $is_change;
-		private bool $is_rename;
-		private string $new_name;
-		private array $placeholders;
+		private $name;
+		private $attributes;
+		private $is_update;
+		private $is_delete;
+		private $is_change;
+		private $is_rename;
+		private $new_name;
+		private $placeholders;
 
 		public function __construct( string $name, array $attributes = [], array $extras = [] ) {
 			$this->name      = $name;

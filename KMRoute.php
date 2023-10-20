@@ -6,96 +6,87 @@
 if ( ! class_exists( 'KMRoute' ) ) {
 
 	class KMRoute {
-		private static array $routes = [];
-		private static array $allQueryVars = [];
-		private static array $names;
-		private static string $currentMiddleware = '';
-		private static string $currentGroup = '';
-		private static array $middlewares = [];
-		private string $route;
-		private string $middleware;
-		private string $view;
-		private array $queryVars;
-		private array $regex;
 
-		private function __construct( string $route, string $view, string $middleware = '' ) {
+		private $route;
+		private $middleware;
+		private $view;
+		private $queryVars;
+		private $regex;
+		private $routeManager;
+
+		public function __construct( KMRouteManager $routeManager ) {
+			$this->routeManager = $routeManager;
+		}
+
+		/**
+		 * @author kofimokome
+		 * Initialize a route
+		 */
+		private function initRoute( string $route, string $view, string $middleware = '' ) {
 			if ( $route[0] == '/' ) {
 				$route = substr( $route, 1 );
 			}
-			if ( self::$currentGroup == '' ) {
+			if ( $this->routeManager->currentGroup == '' ) {
 				$this->route     = $route;
 				$this->queryVars = [];
 			} else {
 				if ( $route == '' ) {
-					$this->route = self::$currentGroup;
+					$this->route = $this->routeManager->currentGroup;
 				} else {
-					$this->route = self::$currentGroup . '/' . $route;
+					$this->route = $this->routeManager->currentGroup . '/' . $route;
 				}
-				$this->queryVars = [ self::$currentGroup ];
+				$this->queryVars = [ $this->routeManager->currentGroup ];
 			}
-			$this->middleware = $middleware == '' ? self::$currentMiddleware : $middleware;
+			$this->middleware = $middleware == '' ? $this->routeManager->currentMiddleware : $middleware;
 			$this->view       = $view;
 			$this->regex      = [];
 		}
 
-		public static function group( string $group, \Closure $callback ): void {
+		/**
+		 * @author kofimokome
+		 * Create a round group
+		 */
+		public function group( string $group, Closure $callback ): void {
 			if ( $group[0] == '/' ) {
 				$group = substr( $group, 1 );
 			}
-			$oldGroup = self::$currentGroup;
+			$oldGroup = $this->routeManager->currentGroup;
 			if ( $oldGroup == '' ) {
-				self::$currentGroup = $group;
+				$this->routeManager->currentGroup = $group;
 			} else {
-				self::$currentGroup = $oldGroup . '/' . $group;
+				$this->routeManager->currentGroup = $oldGroup . '/' . $group;
 			}
 			$callback();
-			self::$currentGroup = $oldGroup;
+			$this->routeManager->currentGroup = $oldGroup;
 		}
 
 		/**
 		 * @author kofimokome
 		 * @since 1.0.0
 		 */
-		public static function registerMiddleware( string $middleware, \Closure $callback ): void {
-			self::$middlewares[ $middleware ] = $callback;
-		}
-
-		/**
-		 * @author kofimokome
-		 * @since 1.0.0
-		 */
-		public static function middleware( string $middleware, \Closure $callback ): void {
-			self::$currentMiddleware = $middleware;
+		public function middleware( string $middleware, Closure $callback ): void {
+			$this->routeManager->currentMiddleware = $middleware;
 			$callback();
-			self::$currentMiddleware = '';
+			$this->routeManager->currentMiddleware = '';
 		}
 
 		/**
 		 * @author kofimokome
 		 * @since 1.0.0
 		 */
-		public static function get( string $route, $view ): KMRoute {
-			$route          = new KMRoute( $route, $view, self::$currentMiddleware );
-			self::$routes[] = $route;
+		public function add( string $route, $view ): KMRoute {
 
-			return $route;
+			$this->initRoute( $route, $view, $this->routeManager->currentMiddleware );
+			$this->routeManager->routes[] = $this;
+
+			return $this;
 		}
 
 		/**
 		 * @author kofimokome
 		 * @since 1.0.0
 		 */
-		public static function registerRoutes(): void {
-			foreach ( self::$routes as $route ) {
-				$route->registerRoute();
-			}
-		}
-
-		/**
-		 * @author kofimokome
-		 * @since 1.0.0
-		 */
-		private function registerRoute(): void {
+		public function registerRoute(): void {
 			$route = str_replace( ':', '', $this->route );
 			// split route into parts after /
 			$route_parts = explode( '/', $route );
@@ -173,7 +164,7 @@ if ( ! class_exists( 'KMRoute' ) ) {
 				// 2. We get all the query vars that are registered by this route, which will be in the $route_parts array
 
 				// 3. We get all the query vars that are not registered by this route, which will be in the $not_registered_vars array
-				$not_registered_vars = array_filter( static::$allQueryVars, function ( $queryVar ) use ( $route_parts ) {
+				$not_registered_vars = array_filter( $this->routeManager->allQueryVars, function ( $queryVar ) use ( $route_parts ) {
 					return ! in_array( $queryVar, $route_parts );
 				} );
 
@@ -194,10 +185,10 @@ if ( ! class_exists( 'KMRoute' ) ) {
 
 				// 6. Else we return the view
 				if ( $this->middleware == '' ) {
-					return $this->defaultMiddleware( $this->view );
+					return $this->routeManager->defaultMiddleware( $this->view );
 				}
 
-				return self::$middlewares[ $this->middleware ]( $this->view );
+				return $this->routeManager->middlewares[$this->middleware]( $this->view );
 			}, 999 );
 
 			add_filter( 'query_vars', function ( $query_vars ) use ( $route_parts ) {
@@ -208,74 +199,10 @@ if ( ! class_exists( 'KMRoute' ) ) {
 					$query_vars[] = $route_part;
 				}
 
-				static::$allQueryVars = array_merge( static::$allQueryVars, $route_parts );
+				$this->routeManager->allQueryVars = array_merge( $this->routeManager->allQueryVars, $route_parts );
 
 				return $query_vars;
 			} );
-		}
-
-		/**
-		 * @throws Exception
-		 * @since 1.0.0
-		 * @author kofimokome
-		 */
-		public function defaultMiddleware( $view ): string {
-			return self::renderView( $view );
-		}
-
-		public static function renderView( $template = '', $echo = true ) {
-
-			$parent_module_folder = KMCF7MS_MODULE_DIR;
-			$template             = str_replace( '.', '/', $template );
-
-			// Start output buffering.
-			ob_start();
-			ob_implicit_flush( 0 );
-			try {
-				$env       = KMEnv::getEnv();
-				$views_dir = $env['VIEWS_DIR'];
-				// remove trailing / from $views_dir if any
-				$views_dir = rtrim( $views_dir, '/' );
-
-				$plugin_dir = self::getPluginDir();
-
-				include $plugin_dir . $views_dir . '/' . $template . '.php';
-
-			} catch ( Exception $e ) {
-				ob_end_clean();
-				throw $e;
-			}
-
-			if ( $echo ) {
-				echo ob_get_clean();
-			} else {
-				return ob_get_clean();
-			}
-		}
-
-		/**
-		 * @throws Exception
-		 */
-		private static function getPluginDir(): bool|string {
-			$plugin_path     = plugin_dir_path( __FILE__ );
-			$plugin_basename = plugin_basename( __FILE__ );
-			preg_match( "/.+\/wp-content\/plugins\//", $plugin_path, $matches );
-			if ( sizeof( $matches ) > 0 ) {
-				$plugin_path = $matches[0];
-				$chars       = explode( '/', $plugin_basename );
-				if ( sizeof( $chars ) > 0 ) {
-					$plugin_basename = $chars[0];
-					return $plugin_path . $plugin_basename;
-				}
-			}
-		}
-
-		/**
-		 * @author kofimokome
-		 * @since 1.0.0
-		 */
-		public static function getRoute( string $name ): string|bool {
-			return self::$names[ $name ] ?? false;
 		}
 
 		/**
@@ -307,7 +234,7 @@ if ( ! class_exists( 'KMRoute' ) ) {
 		 * @since 1.0.0
 		 */
 		public function name( string $name ): KMRoute {
-			self::$names[ $name ] = $this->route;
+			$this->routeManager->names[ $name ] = $this->route;
 
 			return $this;
 		}
