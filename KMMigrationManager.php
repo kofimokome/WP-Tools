@@ -154,7 +154,7 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 		 * Delete a particular migration
 		 * @since 1.0.0
 		 */
-		public function dropMigration( array $migration, bool $delete_file = false ) {
+		public function dropMigration( array $migration, bool $delete_file = true ) {
 			global $wpdb;
 			$migration_object = new $migration['class']( $this, $this->context );
 			$blueprint        = new KMBlueprint();

@@ -1,0 +1,120 @@
+#!/usr/bin/env php
+
+<?php
+
+unset( $argv[0] );
+parse_str( implode( '&', $argv ), $_REQUEST );
+$args = array_keys( $_REQUEST );
+$env  = [];
+if ( is_file( '.env' ) ) {
+	$envFile = file_get_contents( '.env' );
+	$lines   = explode( "\n", $envFile );
+	foreach ( $lines as $line ) {
+		if ( strlen( $line ) == 0 || $line[0] == '#' ) {
+			continue;
+		}
+		$line = explode( '=', $line );
+		if ( count( $line ) == 2 ) {
+			if ( is_numeric( $line[0] ) ) {
+				continue;
+			}
+			$env[ strtoupper( trim( $line[0] ) ) ] = trim( str_replace( "'", '', $line[1] ) );
+		}
+	}
+
+	if ( ! isset( $env['WORDPRESSTOOLS_DIR'] ) ) {
+		echo( "\033[31mERROR!: Please set the WORDPRESSTOOLS_DIR in the .env file\n" );
+		exit();
+	}
+	$wp_tools_dir = ltrim( $env['WORDPRESSTOOLS_DIR'], '/' );
+	if ( ! is_dir( $wp_tools_dir ) ) {
+		echo( "\033[31mERROR!: $wp_tools_dir is not a valid directory\n" );
+		exit();
+	}
+
+	$wp_tools_scripts_dir = $wp_tools_dir . '/scripts';
+	if ( ! is_dir( $wp_tools_scripts_dir ) ) {
+		echo( "\033[31mERROR!: $wp_tools_dir is not a valid WordPress Tools directory\n" );
+		exit();
+	}
+
+	if ( ! isset( $env['NAMESPACE'] ) ) {
+		echo( "\033[31mERROR!: Please set the NAMESPACE in .env file\n" );
+		exit();
+	}
+
+	if ( trim( $env['NAMESPACE'] ) == '' ) {
+		echo( "\033[31mERROR!: Please set the NAMESPACE in .env file\n" );
+		exit();
+	}
+	require $wp_tools_scripts_dir . '/migrations.php';
+	require $wp_tools_scripts_dir . '/models.php';
+
+} else {
+	echo( "\033[31mERROR!: No .env file found\n" );
+	exit();
+}
+
+function clean_input( $string ) {
+	$string = str_replace( ' ', '_', $string ); // Replaces all spaces with hyphens.
+	$string = str_replace( '-', '_', $string ); // Replaces all spaces with hyphens.
+	$string = preg_replace( '/[^A-Za-z0-9\-]/', '_', $string ); // Removes special chars.
+
+	return preg_replace( '/_+/', '_', $string ); // Replaces multiple hyphens with single one.
+}
+
+
+function show_help_text(): void {
+	$help = "\033[1mInvalid command! Usage php wptools [command]\nSupported commands: \033[0m\n" .
+	        "\033[32m\033[1mmake:migration \033[0m\033[39m=> Create a new migration file in the migrations folder. Example: php wptools make:migration add_is_creator_to_users_table\n" .
+	        "\033[32m\033[1mmake:model \033[0m\033[39m=> Creates a new model in the models directory. Example: php wptools make:model User\n";
+	echo $help;
+}
+
+echo "----------------------------------------------------\n";
+echo "\033[32m\033[1m|||||| WordPress Tools Command Line Interface ||||||\033[0m\033[39m\n";
+echo "----------------------------------------------------\n";
+
+
+if ( sizeof( $args ) == 0 ) {
+	show_help_text();
+	exit();
+}
+
+$plugin_root_dir = dirname( __FILE__ );
+switch ( $args[0] ) {
+
+	case 'make:migration':
+		if ( sizeof( $args ) == 1 ) {
+			echo( "\033[31mERROR!: No migration name passed\n" );
+			exit();
+		}
+		$migration_name = $args[1];
+		$table_name     = '';
+		$is_update      = false;
+		if ( isset( $_REQUEST['--table'] ) ) {
+			$table_name = $_REQUEST['--table'];
+		}
+		if ( isset( $_REQUEST['--update'] ) ) {
+			$is_update = true;
+		}
+		make_migration( $migration_name, $table_name, $is_update );
+		break;
+
+	case 'make:model':
+		if ( sizeof( $args ) == 1 ) {
+			echo( "\033[31mERROR!: No model name passed\n" );
+			exit();
+		}
+		$model_name = $args[1];
+		$table_name = '';
+		if ( isset( $_REQUEST['--table'] ) ) {
+			$table_name = $_REQUEST['--table'];
+		}
+		make_model( $model_name, $table_name );
+		break;
+
+	default:
+		show_help_text();
+		break;
+}
