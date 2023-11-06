@@ -1,6 +1,6 @@
 # WordPress Tools
 
-These are a set of helper classes that will make WordPress plugin/theme development easier
+These are a set of helper classes that will make WordPress plugin development easier
 
 Read
 this [Article on Medium](https://medium.com/@kofimokome/simplifying-wordpress-plugin-development-using-object-oriented-programming-part-1-bootstrapping-f939f435d31b)
@@ -8,19 +8,19 @@ to find out how to use these tools.
 
 ## 1. Installation
 
-1. Copy the extracted folder to your plugin or theme directory
-2. Copy the .env.example to the root of your plugin and theme and rename the file to .env. Then update the values in the
+1. Copy the extracted folder to your plugin directory
+2. Copy the .env.example to the root of your plugin and rename the file to .env. Then update the values in the
    .env
 3. If you would like to use the `wptools` command line interface:
-    1. Copy/move the `wptools` file to the root of your plugin or theme
-    2. In your `.env` file, make sure to set the `WORDPRESSTOOLS_DIR` and `NAMESPACE` variables.
-    3. cd to the root of your plugin or theme and run `php wptools` for the list of commands.
+   1. Copy/move the `wptools` file to the root of your plugin
+   2. In your `.env` file, make sure to set the `WORDPRESSTOOLS_DIR` and `NAMESPACE` variables.
+   3. cd to the root of your plugin and run `php wptools` for the list of commands.
 
 ```bash
 $ php wptools
 ```
 
-4. Import the `WordPressTools.php` file in your plugin or theme main file and instantiate the class.
+4. Import the `WordPressTools.php` file in your plugin main file and instantiate the class.
 
 ```php
 $wordpress_tools = new WordPressTools( __FILE__ );
@@ -43,7 +43,7 @@ Before you can use the migrations, you need to make sure you have done the follo
 1. Make sure you have created a folder to store the migrations in your plugin
 2. Make sure you have set the `MIGRATIONS_DIR` variable in your `.env` file to this folder.
 3. Make sure you have set the `TABLE_PREFIX` variable in your `.env` file to this folder. The table prefix helps to
-   avoid conflicts with other plugins and themes.
+   avoid conflicts with other plugins.
 
 ### 3.1 Creating a migration
 
@@ -88,7 +88,7 @@ class CreateMessagesTable extends KMMigration {
 
 ### 3.2 Running Migrations
 
-To run migrations, you need to add the code below to your plugin or theme main file.
+To run migrations, you need to add the code below to your plugin main file.
 
 ```php
 $wordpress_tools = new WordPressTools( __FILE__ );
@@ -146,7 +146,7 @@ You can use models to query the database, without writing a single SQL command. 
 The WordPressTools provides an easy-to-use interface for query the database. Before you can use the model, you need to
 make sure you have done the following:
 
-1. Make sure you have created a folder to store the models in your plugin/theme
+1. Make sure you have created a folder to store the models in your plugin
 2. Make sure you have set the `MODELS_DIR` variable in your `.env` file to this folder.
 
 ### 4.1 Creating Models
