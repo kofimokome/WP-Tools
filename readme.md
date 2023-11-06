@@ -2,7 +2,9 @@
 
 These are a set of helper classes that will make WordPress plugin/theme development easier
 
-Read this [Article on Medium](https://medium.com/@kofimokome/simplifying-wordpress-plugin-development-using-object-oriented-programming-part-1-bootstrapping-f939f435d31b) to find out how to use these tools.
+Read
+this [Article on Medium](https://medium.com/@kofimokome/simplifying-wordpress-plugin-development-using-object-oriented-programming-part-1-bootstrapping-f939f435d31b)
+to find out how to use these tools.
 
 ## 1. Installation
 
@@ -389,9 +391,62 @@ $data  = [
 ];
 ```
 
-## 5. Menus and Sub Menu Pages
+## 5. Validating Requests
 
-### 5.1. Menu page without sub menu page
+You can use the `KMValidator` class to validate your API requests.
+
+```php
+$validator = KMValidator::make( [
+	'title'   => 'required',
+	'content' => 'required',
+], $_POST );
+```
+
+The `KMValidator` class takes two parameters, the first is an array of rules and the second is the data to be validated.
+To run the validation, call the `validate` method on the validator object.
+
+```php
+$validator->validate();
+```
+
+The `validate` method returns a 400 response if the validation fails. It can also return a boolean.
+Always check if the validation is successful before using the data.
+
+```php
+if ( $validator->validate() ) {
+    // use the data
+}
+```
+
+You can validate the request while instantiation the `KMValidator` class
+
+```php
+$validator = KMValidator::validate( [
+    'title'   => 'required',
+    'content' => 'required',
+], $_POST );
+```
+
+You can pass more than one rule to a field by separating them with a pipe `|`.
+
+```php
+$validator = KMValidator::validate( [
+    'title'   => 'required|numeric',
+    'content' => 'required',
+], $_POST );
+```
+
+The following rules are available:
+
+- `required` - The field is required
+- `numeric` - The field must be a numeric value
+- `integer` - The field must be an integer
+- `bool` - The field must be a boolean value (true or false) or (1 or 0)
+- `pdf` - The field must be a pdf file
+
+## 6. Menus and Sub Menu Pages
+
+### 6.1. Menu page without sub menu page
 
 a. In a class
 
@@ -433,7 +488,7 @@ $menu_page = new KMMenuPage(
 $menu_page->run();
 ```
 
-### 5.2. Menu page with a sub menu
+### 6.2. Menu page with a sub menu
 
 ```php
 $menu_title = 'CF7 Form Filter';
@@ -473,7 +528,7 @@ $menu_page->run();
 
 ![menu with submenu page](images/img1.png)
 
-### 5.3. Sub Menu page with tabs
+### 6.3. Sub Menu page with tabs
 
 ```php
 	$settings_page = new KMSubMenuPage(
@@ -524,7 +579,8 @@ public function status_tab_view( $args ) {
 
 ![sub menu with tab](images/img3.png)
 
-### 5.4. Settings API
+### 7. Settings API
+The `KMSetting` class is a wrapper for the WordPress Settings API. It provides a simple way to create settings page with sections and fields.
 
 ```php
 $settings = new KMSetting( 'kmcf7-message-filter-options&tab=advanced' );
