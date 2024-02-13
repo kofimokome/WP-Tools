@@ -28,7 +28,7 @@ $wordpress_tools = new WordPressTools( __FILE__ );
 
 ## 2. How to get the WordPressTools instance
 
-To get the instance of the WordPressTools class, you can use the `get_instance()` method. <br/>
+To get the instance of the WordPressTools class from any file in your plugin, you can use the `get_instance()` method. <br/>
 NOTE: An exception is thrown if you have not created an instance of the WordPressTools class.
 
 ```php
