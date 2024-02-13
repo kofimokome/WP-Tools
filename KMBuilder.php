@@ -11,6 +11,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		private $table_name;
 		public $where = '';
 		public $orderBys = [];
+		public $selects = [];
 		public $groupBys = [];
 		public $pagination = '';
 		public $join = '';
@@ -20,7 +21,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		private $model;
 		private $context;
 
-		function __construct( string $table, KMModel $model, string $context) {
+		function __construct( string $table, KMModel $model, string $context ) {
 			$this->table_name = $table;
 			$this->model      = $model;
 			$this->context    = $context;
@@ -92,17 +93,35 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		 * example
 		 * [Job::tableName().'.*',Currency::tableName().'.code',JobType::tableName().'.name AS job_type_name '],
 		 */
+		public function select(  $fields = [] ): KMBuilder {
+			if ( is_array( $fields ) ) {
+				$this->selects = $fields;
+			} else {
+				$this->selects = explode( ',', $fields );
+			}
+
+			return $this;
+		}
+
+		/**
+		 * @param array $fields the fields to get. if empty, query will get everything
+		 *
+		 * @author kofimokome
+		 * @since 1.0.0
+		 * example
+		 * [Job::tableName().'.*',Currency::tableName().'.code',JobType::tableName().'.name AS job_type_name '],
+		 */
 		public function get( array $fields = [] ) {
 			global $wpdb;
+			if ( sizeof( $fields ) > 0 ) {
+				$this->select( $fields );
+			}
 			$table_name = $this->table_name;
 
 			$db_name = $table_name;
 			$select  = "SELECT * "; // set select all as the default
-			if ( sizeof( $fields ) > 0 ) { // we want to get specific fields, not everything, eg only id, name
-				$select = 'SELECT ';
-				foreach ( $fields as $field ) {
-					$select .= $field . ', ';
-				}
+			if ( sizeof( $this->selects ) > 0 ) { // we want to get specific fields, not everything, eg only id, name
+				$select = 'SELECT ' . implode( ', ', $this->selects ) . ' ';
 			}
 			$select    = rtrim( $select, ', ' ); // removes the last comma (,) from the select statement
 			$data      = [];

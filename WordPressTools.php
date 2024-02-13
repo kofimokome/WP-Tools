@@ -73,6 +73,13 @@ if ( ! class_exists( 'WordPressTools' ) ) {
 		/**
 		 * @author kofimokome
 		 */
+		public function viewPath( string $view ) {
+			return $this->route_manager->viewPath( $view );
+		}
+
+		/**
+		 * @author kofimokome
+		 */
 		public function route( string $name, array $params = [] ): string {
 			return $this->route_manager->route( $name, $params );
 		}
@@ -99,6 +106,10 @@ if ( ! class_exists( 'WordPressTools' ) ) {
 		 */
 		public function getPluginURL(): string {
 			return rtrim( plugin_dir_url( $this->context ), '/' );
+		}
+
+		public function env() {
+			return ( new KMEnv( $this->context ) )->getEnv();
 		}
 	}
 

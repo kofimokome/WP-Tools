@@ -58,6 +58,24 @@ if ( ! class_exists( 'KMRouteManager' ) ) {
 
 		/**
 		 * @author kofimokome
+		 * Returns the path of a view in the views directory
+		 */
+		public function viewPath( $template = '' ) {
+			$template = str_replace( '.', '/', $template );
+
+			$env       = ( new KMEnv( $this->context ) )->getEnv();
+			$views_dir = $env['VIEWS_DIR'];
+			// remove trailing / from $views_dir if any
+			$views_dir = rtrim( $views_dir, '/' );
+
+			$plugin_dir = $this->getPluginDir();
+
+			return $plugin_dir . $views_dir . '/' . $template . '.php';
+
+		}
+
+		/**
+		 * @author kofimokome
 		 * Display the content of a view in the views directory
 		 */
 		public function renderView( $template = '', $echo = true ) {

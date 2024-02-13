@@ -12,9 +12,9 @@ to find out how to use these tools.
 2. Copy the .env.example to the root of your plugin and rename the file to .env. Then update the values in the
    .env
 3. If you would like to use the `wptools` command line interface:
-   1. Copy/move the `wptools` file to the root of your plugin
-   2. In your `.env` file, make sure to set the `WORDPRESSTOOLS_DIR` and `NAMESPACE` variables.
-   3. cd to the root of your plugin and run `php wptools` for the list of commands.
+    1. Copy/move the `wptools` file to the root of your plugin
+    2. In your `.env` file, make sure to set the `WORDPRESSTOOLS_DIR` and `NAMESPACE` variables.
+    3. cd to the root of your plugin and run `php wptools` for the list of commands.
 
 ```bash
 $ php wptools
@@ -343,12 +343,20 @@ $applications->leftJoin('jobs', false)
 $results = $applications->get();
 ```
 
-11. The `get` method can also be used to get particular fields from the result
+11. The `select` method can be used to get particular fields from the result
 
 ```php
-    $messages = Message::where( 'contact_form', '=', 'cf7' )
+    $messages = Message::select( ['id', 'message'] )->where( 'contact_form', '=', 'cf7' )
                             ->where( 'form_id', '=', 2 )
-                            ->get( ['id', 'message']);
+                            ->get();
+```
+
+or
+
+```php
+    $messages = Message::select( 'id, message' )->where( 'contact_form', '=', 'cf7' )
+                            ->where( 'form_id', '=', 2 )
+                            ->get();
 ```
 
 12. The `paginate` method can be used to paginate the results
