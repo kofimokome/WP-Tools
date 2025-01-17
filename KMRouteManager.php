@@ -134,7 +134,7 @@ if ( ! class_exists( 'KMRouteManager' ) ) {
 
 				return site_url( $route );
 			} else {
-				return 'bro';
+				return '';
 			}
 		}
 

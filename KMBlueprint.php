@@ -33,20 +33,20 @@ if ( ! class_exists( 'KMBlueprint' ) ) {
 		 */
 		public static function addColumn( string $table, string $field, string $type, string $default = '' ) {
 			global $wpdb;
-			$query   = $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '%s' AND column_name = '%s'", [
+
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '%s' AND column_name = '%s'", [
 				$table,
 				$field
-			] );
-			$results = $wpdb->get_results( $query );
+			] ) );
 			if ( empty( $results ) ) {
 				$default_string = is_numeric( $default ) ? "DEFAULT $default" : "DEFAULT " . "'$default'";
-				$query          = $wpdb->prepare( "ALTER TABLE  %s  ADD  %s  %s  NOT NULL %s", [
+
+				$wpdb->query( $wpdb->prepare( "ALTER TABLE  %s  ADD  %s  %s  NOT NULL %s", [
 					$table,
 					$field,
 					$type,
 					$default_string
-				] );
-				$wpdb->query( $query );
+				] ) );
 			}
 		}
 

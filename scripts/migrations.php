@@ -12,14 +12,14 @@ function make_migration( string $migration_name, $table_name = '', $is_update = 
 	global $env;
 	global $plugin_root_dir;
 	if ( ! isset( $env['MIGRATIONS_DIR'] ) ) {
-		echo("\033[31mERROR!: The migrations directory is not set. Please set it in the .env file\033[39m \n");
+		echo( "\033[31mERROR!: The migrations directory is not set. Please set it in the .env file\033[39m \n" );
 		exit();
 	}
 	// check if the migrations folder exists
 	$migrations_dir = $plugin_root_dir . $env['MIGRATIONS_DIR'];
 
 	if ( ! is_dir( $migrations_dir ) ) {
-		echo("\033[31mERROR!: The migrations directory {$env['MIGRATIONS_DIR']} does not exist. Please create it first\033[39m \n");
+		echo( "\033[31mERROR!: The migrations directory {$env['MIGRATIONS_DIR']} does not exist. Please create it first\033[39m \n" );
 		exit();
 	}
 	$migrations_dir = rtrim( $migrations_dir, '/' );
@@ -29,7 +29,7 @@ function make_migration( string $migration_name, $table_name = '', $is_update = 
 	$migration_name = preg_replace( '/[^A-Za-z0-9\-]/', '_', $migration_name );
 
 	// create a file in the migration folder with the syntax YYYY_MM_DD_HHMMSS_migration_name.php
-	$file_name = date( 'Y_m_d_His' ) . '_' . $migration_name . '.php';
+	$file_name = gmdate( 'Y_m_d_His' ) . '_' . $migration_name . '.php';
 	$file_path = $migrations_dir . '/' . $file_name;
 	$file      = fopen( $file_path, 'w' );
 
@@ -82,7 +82,11 @@ class ' . $migration_class_name . ' extends KMMigration {
 
 ';
 	}
-	fwrite( $file, $migration_template );
+	if ( fwrite( $file, $migration_template ) ) {
+		echo( "\033[32m\033[1mMigration $file_path created successfully! \033[0m \033[39m \n" );
+	} else {
+		echo( "\033[31mERROR!: Could not create the migration file. Please check your file permissions.\033[39m \n" );
+	};
+
 	fclose( $file );
-	echo( "\033[32m\033[1mMigration $file_path created successfully! \033[0m \033[39m \n" );
 }

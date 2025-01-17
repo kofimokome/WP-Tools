@@ -7,7 +7,7 @@ if ( ! class_exists( 'KMEnv' ) ) {
 
 	class KMEnv {
 		private $env = [];
-		private $envFile = '.env';
+		private $envFile = 'config.env';
 		private $plugin_path;
 		private $plugin_basename;
 
@@ -31,7 +31,7 @@ if ( ! class_exists( 'KMEnv' ) ) {
 					$plugin_basename = $chars[0];
 
 					if ( $this->envFile == '' ) {
-						$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_basename . '/.env';
+						$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_basename . '/config.env';
 					} else {
 						$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . trim( $this->envFile );
 					}

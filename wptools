@@ -22,11 +22,11 @@ if ( is_file( '.env' ) ) {
 		}
 	}
 
-	if ( ! isset( $env['WORDPRESSTOOLS_DIR'] ) ) {
-		echo( "\033[31mERROR!: Please set the WORDPRESSTOOLS_DIR in the .env file\n" );
+	if ( ! isset( $env['WPTOOLS_DIR'] ) ) {
+		echo( "\033[31mERROR!: Please set the WPTOOLS_DIR in the .env file\n" );
 		exit();
 	}
-	$wp_tools_dir = ltrim( $env['WORDPRESSTOOLS_DIR'], '/' );
+	$wp_tools_dir = ltrim( $env['WPTOOLS_DIR'], '/' );
 	if ( ! is_dir( $wp_tools_dir ) ) {
 		echo( "\033[31mERROR!: $wp_tools_dir is not a valid directory\n" );
 		exit();

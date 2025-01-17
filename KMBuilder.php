@@ -93,7 +93,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		 * example
 		 * [Job::tableName().'.*',Currency::tableName().'.code',JobType::tableName().'.name AS job_type_name '],
 		 */
-		public function select(  $fields = [] ): KMBuilder {
+		public function select( $fields = [] ): KMBuilder {
 			if ( is_array( $fields ) ) {
 				$this->selects = $fields;
 			} else {
@@ -447,13 +447,14 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 			$table_name = $this->table_name;
 			if ( $this->model->id == 0 ) { // we are creating
 				if ( $this->model->hasTimeStamps() ) {
-					$fields['created_at'] = date( "Y-m-d H:i" );
-					$fields['updated_at'] = date( "Y-m-d H:i" );
+					$fields['created_at'] = gmdate( "Y-m-d H:i" );
+					$fields['updated_at'] = gmdate( "Y-m-d H:i" );
 				}
-				$result = $wpdb->insert( $table_name, $fields );
+				$fields['id'] = NULL;
+				$result       = $wpdb->insert( $table_name, $fields );
 			} else { // we are updating
 				if ( $this->model->hasTimeStamps() ) {
-					$fields['updated_at'] = date( "Y-m-d H:i" );
+					$fields['updated_at'] = gmdate( "Y-m-d H:i" );
 				}
 				unset( $fields['id'] );
 				$result = $wpdb->update( $table_name, $fields, [ 'id' => $this->model->id ] );

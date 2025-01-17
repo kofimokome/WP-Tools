@@ -62,7 +62,7 @@ if ( ! class_exists( 'KMSubMenuPage' ) ) {
 		 * @since 1.0.0
 		 */
 		public function show_tabs() {
-			$current_tab = isset( $_GET['tab'] ) ? esc_html( $_GET['tab'] ) : null;
+			$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : null;
 			?>
             <div class="wrap">
                 <div id="icon-options-general" class="icon32"></div>

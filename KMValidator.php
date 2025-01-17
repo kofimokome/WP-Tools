@@ -61,7 +61,7 @@ if ( ! class_exists( 'KMValidator' ) ) {
 		 * Rules: required, bool, int, numeric, pdf
 		 * @author kofimokome
 		 */
-		public function validateData( $rules = [], $data = [] ): bool {
+		public function validateData( $rules = [], $data = [] ): bool|array {
 
 			if ( sizeof( $rules ) == 0 ) {
 				$rules = $this->rules;
@@ -139,7 +139,7 @@ if ( ! class_exists( 'KMValidator' ) ) {
 			$this->rules = [];
 			$this->data  = [];
 
-			return true;
+			return $data;
 		}
 	}
 }

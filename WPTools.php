@@ -20,8 +20,8 @@ require_once 'KMValidator.php';
 require_once 'lib/plural/Plural.php';
 
 
-if ( ! class_exists( 'WordPressTools' ) ) {
-	class WordPressTools {
+if ( ! class_exists('WPTools') ) {
+	class WPTools {
 		public $env;
 		public $route_manager;
 		public $migration_manager;
@@ -43,7 +43,7 @@ if ( ! class_exists( 'WordPressTools' ) ) {
 		/**
 		 * @author kofimokome
 		 */
-		public static function getInstance( string $context ): WordPressTools {
+		public static function getInstance( string $context ): WPTools {
 			$plugin_basename = plugin_basename( $context );
 			$plugin          = explode( '/', $plugin_basename )[0];
 

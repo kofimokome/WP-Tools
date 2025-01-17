@@ -1,4 +1,4 @@
-# WordPress Tools
+# WP Tools
 
 These are a set of helper classes that will make WordPress plugin development easier
 
@@ -13,31 +13,31 @@ to find out how to use these tools.
    .env
 3. If you would like to use the `wptools` command line interface:
     1. Copy/move the `wptools` file to the root of your plugin
-    2. In your `.env` file, make sure to set the `WORDPRESSTOOLS_DIR` and `NAMESPACE` variables.
+    2. In your `.env` file, make sure to set the `WPTOOLS_DIR` and `NAMESPACE` variables.
     3. cd to the root of your plugin and run `php wptools` for the list of commands.
 
 ```bash
 $ php wptools
 ```
 
-4. Import the `WordPressTools.php` file in your plugin main file and instantiate the class.
+4. Import the `WPTools.php` file in your plugin main file and instantiate the class.
 
 ```php
-$wordpress_tools = new WordPressTools( __FILE__ );
+$wordpress_tools = new WPTools( __FILE__ );
 ```
 
-## 2. How to get the WordPressTools instance
+## 2. How to get the WPTools instance
 
-To get the instance of the WordPressTools class from any file in your plugin, you can use the `get_instance()` method. <br/>
-NOTE: An exception is thrown if you have not created an instance of the WordPressTools class.
+To get the instance of the WPTools class from any file in your plugin, you can use the `get_instance()` method. <br/>
+NOTE: An exception is thrown if you have not created an instance of the WPTools class.
 
 ```php
-$wordpress_tools = WordPressTools::get_instance(__FILE__);
+$wordpress_tools = WPTools::get_instance(__FILE__);
 ```
 
 ## 3. Managing Migrations
 
-The WordPressTools provides an easy-to-use interface for managing database migrations. <br/>
+The WPTools provides an easy-to-use interface for managing database migrations. <br/>
 Before you can use the migrations, you need to make sure you have done the following:
 
 1. Make sure you have created a folder to store the migrations in your plugin
@@ -91,7 +91,7 @@ class CreateMessagesTable extends KMMigration {
 To run migrations, you need to add the code below to your plugin main file.
 
 ```php
-$wordpress_tools = new WordPressTools( __FILE__ );
+$wordpress_tools = new WPTools( __FILE__ );
 $wordpress_tools->migration_manager->runMigrations();
 
 ```
@@ -143,7 +143,7 @@ class AddSlugToQuestionsTable extends KMMigration {
 ## 4. Models
 
 You can use models to query the database, without writing a single SQL command. <br/>
-The WordPressTools provides an easy-to-use interface for query the database. Before you can use the model, you need to
+The WPTools provides an easy-to-use interface for query the database. Before you can use the model, you need to
 make sure you have done the following:
 
 1. Make sure you have created a folder to store the models in your plugin
