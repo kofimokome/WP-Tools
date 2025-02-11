@@ -48,7 +48,7 @@ if ( ! class_exists('WPTools') ) {
 			$plugin          = explode( '/', $plugin_basename )[0];
 
 			if ( ! isset( self::$instances[ $plugin ] ) ) {
-				throw new Exception( 'WordPressTools instance not found' );
+				throw new Exception( 'WPTools instance not found' );
 			}
 
 			return self::$instances[ $plugin ];
