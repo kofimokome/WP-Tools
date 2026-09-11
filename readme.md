@@ -8,23 +8,27 @@ to find out how to use these tools.
 
 ## 1. Installation
 
-1. Copy the extracted folder to your plugin directory
-2. Copy the config.env.example to the root of your plugin and rename the file to config.env. Then update the values in the
-   config.env
-3. If you would like to use the `wptools` command line interface:
-    1. Copy/move the `wptools` file to the root of your plugin
-    2. In your `config.env` file, make sure to set the `WPTOOLS_DIR` and `NAMESPACE` variables.
-    3. cd to the root of your plugin and run `php wptools` for the list of commands.
+### With Composer
 
 ```bash
-$ php wptools
+composer require kofimokome/wordpress-tools
 ```
 
-4. Import the `WPTools.php` file in your plugin main file and instantiate the class.
+1. Copy `config.env.example` to the root of your plugin and rename it to `config.env`. Then update the values.
+2. Import the Composer autoloader in your plugin main file (if not already loaded) and instantiate `WPTools`.
 
 ```php
+require_once __DIR__ . '/vendor/autoload.php';
 $wordpress_tools = new WPTools( __FILE__ );
 ```
+
+3. To use the `wptools` command line interface, `cd` to your plugin root and run:
+
+```bash
+$ vendor/bin/wptools
+```
+
+Make sure `config.env` contains a `NAMESPACE` value.
 
 ## 2. How to get the WPTools instance
 
@@ -54,13 +58,13 @@ or `remove_column_name_from_table` <br/>
 NOTE: The migration name should be in snake case.
 
 ```bash
-$ php wptools make:migration create_users_table
+$ vendor/bin/wptools make:migration create_users_table
 ```
 
 You can also specify the name of the table using the `--table` option
 
 ```bash
-$ php wptools make:migration create_users_table --table=users
+$ vendor/bin/wptools make:migration create_users_table --table=users
 ```
 
 A new migration file will be created the `migrations` folder. <br/>
@@ -120,7 +124,7 @@ If you want to create a migration to update/alter a table, you must add the `--u
 migration. <br/>
 
 ```bash
-$ php wptools make:migration add_slug_to_questions_table --table=questions --update
+$ vendor/bin/wptools make:migration add_slug_to_questions_table --table=questions --update
 ```
 
 An update migration will have the `is_update` property set to true
@@ -157,7 +161,7 @@ The name of the model should be in the format `ModelName` <br/>
 NOTE: The model name should be in Pascal case.
 
 ```bash
-$ php wptools make:model User
+$ vendor/bin/wptools make:model User
 ```
 
 The model will be created in the `models` directory, a typical model will look like this:
@@ -172,7 +176,7 @@ If you want to link the model
 to another table, say the default WordPress users table, add the `--table` flag to the command <br/>
 
 ```bash
-$ php wptools make:model User --table=wp_users
+$ vendor/bin/wptools make:model User --table=wp_users
 ```
 
 The table property will be automatically set.
