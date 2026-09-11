@@ -74,7 +74,7 @@ if ( ! class_exists( 'KMModel' ) ) {
 					$table_name = $names[1] ?? $names[0];
 				}
 				$table_name = ltrim( $table_name, '_' );
-				$table_name = Plural( $table_name );
+				$table_name = Plural::pluralize( $table_name );
 				$table_name = $wpdb->prefix . trim( $env['TABLE_PREFIX'] ) . $table_name;
 			}
 
