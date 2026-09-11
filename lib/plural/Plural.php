@@ -6,6 +6,7 @@
  *
  * @author  Michael J. I. Jackson <mjijackson@gmail.com>
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'Plural' ) ) {
 
 	class Plural {

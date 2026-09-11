@@ -34,7 +34,7 @@ if ( ! class_exists( 'KMBlueprint' ) ) {
 		public static function addColumn( string $table, string $field, string $type, string $default = '' ) {
 			global $wpdb;
 
-			$results = $wpdb->get_results( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '%s' AND column_name = '%s'", [
+			$results = $wpdb->get_results( $wpdb->prepare( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND column_name = %s", [
 				$table,
 				$field
 			] ) );

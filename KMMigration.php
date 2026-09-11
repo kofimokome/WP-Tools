@@ -3,7 +3,7 @@
 /**
  * @author kofimokome
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMMigration' ) ) {
 
 	abstract class KMMigration {

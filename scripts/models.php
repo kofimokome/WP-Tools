@@ -12,6 +12,7 @@ function make_model( string $model_name, string $table_name = '' ): void {
 	global $env;
 	global $plugin_root_dir;
 	if ( ! isset( $env['MODELS_DIR'] ) ) {
+		// This echo runs on the command line. Core WordPress escape functions are not available
 		echo( "\033[31mERROR!: The models directory is not set. Please set it in the .env file\n" );
 		exit();
 	}
@@ -19,7 +20,8 @@ function make_model( string $model_name, string $table_name = '' ): void {
 	$models_dir = $plugin_root_dir . $env['MODELS_DIR'];
 
 	if ( ! is_dir( $models_dir ) ) {
-		echo( "\033[31mERROR!: The models directory {$env['MIGRATIONS_DIR']} does not exist. Please create it first.\n" );
+		// This echo runs on the command line. Core WordPress escape functions are not available
+		echo ( "\033[31mERROR!: The models directory {$env['MIGRATIONS_DIR']} does not exist. Please create it first.\n" );
 		exit();
 	}
 
@@ -35,6 +37,8 @@ function make_model( string $model_name, string $table_name = '' ): void {
 	$model_class_name = str_replace( ' ', '', $model_class_name );
 
 	$file_path = $models_dir . '/' . $model_class_name . '.php';
+
+	// WP_Filesystem is not available since this runs on the terminal
 	$file      = fopen( $file_path, 'w' );
 	$namespace = clean_input( $env['NAMESPACE'] );
 
@@ -52,7 +56,9 @@ class ' . $model_class_name . ' extends KMModel {';
 }
 
 ';
+	// WP_Filesystem is not available since this runs on the terminal
 	fwrite( $file, $model_template );
 	fclose( $file );
+	// This echo runs on the command line. Core WordPress escape functions are not available
 	echo( "\033[32m\033[1mModel $file_path created successfully! \033[0m \033[39m \n" );
 }

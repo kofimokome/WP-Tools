@@ -100,6 +100,7 @@ if ( ! class_exists( 'KMRouteManager' ) ) {
 			}
 
 			if ( $echo ) {
+				// This echos the html content of the page to display, imported from an html file in the plugin folder. Escaping the output will result in the page not displaying on the admin dashboard
 				echo ob_get_clean();
 			} else {
 				return ob_get_clean();

@@ -3,6 +3,7 @@
 /**
  * @author kofimokome
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once 'KMEnv.php';
 require_once 'KMRouteManager.php';

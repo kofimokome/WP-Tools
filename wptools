@@ -6,8 +6,8 @@ unset( $argv[0] );
 parse_str( implode( '&', $argv ), $_REQUEST );
 $args = array_keys( $_REQUEST );
 $env  = [];
-if ( is_file( '.env' ) ) {
-	$envFile = file_get_contents( '.env' );
+if ( is_file( 'config.env' ) ) {
+	$envFile = file_get_contents( 'config.env' );
 	$lines   = explode( "\n", $envFile );
 	foreach ( $lines as $line ) {
 		if ( strlen( $line ) == 0 || $line[0] == '#' ) {

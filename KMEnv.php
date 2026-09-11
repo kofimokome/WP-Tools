@@ -2,7 +2,7 @@
 /**
  * @author kofimokome
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMEnv' ) ) {
 
 	class KMEnv {

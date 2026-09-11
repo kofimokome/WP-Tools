@@ -34,7 +34,7 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 			$files                   = scandir( $migrations_dir );
 			$last_migration_imported = [];
 			foreach ( $files as $file ) {
-				if ( is_file( $migrations_dir . '/' . $file ) && strpos( $file, '.php' ) >= 0 ) {
+				if ( is_file( $migrations_dir . '/' . $file ) && strpos( $file, '.php' ) !== false ) {
 					$contents  = file_get_contents( $migrations_dir . '/' . $file );
 					$namespace = '';
 					// check if the contents has a namespace
@@ -70,6 +70,20 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 		}
 
 		/**
+		 * Sanitize a SQL identifier (table/column name).
+		 * Keeps only alphanumeric characters and underscores.
+		 *
+		 * @param string $name The identifier to sanitize.
+		 *
+		 * @return string The sanitized identifier.
+		 * @author kofimokome
+		 * @since 1.0.0
+		 */
+		private function sanitize_identifier( string $name ): string {
+			return preg_replace( '/[^a-zA-Z0-9_]/', '', $name );
+		}
+
+		/**
 		 * @throws Exception
 		 * @author kofimokome
 		 * Updates a table
@@ -80,15 +94,16 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 			$blueprint = new KMBlueprint( true );
 			$object->up( $blueprint );
 			$columns = $blueprint->getColumns();
+
+			$table_name = $this->sanitize_identifier( $object->getTableName() );
 			foreach ( $columns as $column ) {
-				if ( ! $wpdb->query( $wpdb->prepare( "ALTER TABLE `%1s` %1s", [
-					$object->getTableName(),
-					$column->toString()
-				] ) ) ) {
-					throw new Exception( $wpdb->last_error );
+				// $object->getTableName() is the name of the table and $column->toString() is part of the sql statement - the columns to alter
+				// They can't be put in placeholders
+
+				if ( ! $wpdb->query( "ALTER TABLE `" . $table_name . "` " . $column->toString() ) ) {
+					throw new Exception( esc_html( $wpdb->last_error ) );
 				}
 			}
-
 		}
 
 		/**
@@ -106,13 +121,12 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 				if ( $migration_object->isUpdate() ) {
 					$this->update( $migration, $migration_object );
 				} else {
-					$blueprint = new KMBlueprint();
+					$blueprint     = new KMBlueprint();
 					$migration_object->up( $blueprint );
 					$column_string = $blueprint->toString();
+					$table_name    = $this->sanitize_identifier( $migration_object->getTableName() );
 
-					if ( ! $wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS `%1s` ( $column_string )", [
-						$migration_object->getTableName(),
-					] ) ) ) {
+					if ( ! $wpdb->query( "CREATE TABLE IF NOT EXISTS `" . $table_name . "` ( " . $column_string . " )" ) ) {
 						throw new Exception( $wpdb->last_error );
 					}
 				}
@@ -122,6 +136,7 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 				$migration_model->save();
 
 			} catch ( Exception $e ) {
+				throw $e;
 			}
 		}
 
@@ -160,18 +175,16 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 			$blueprint        = new KMBlueprint();
 			$migration_object->down( $blueprint );
 
+			$table_name = $this->sanitize_identifier( $migration_object->getTableName() );
 			if ( $blueprint->isDropTable() ) {
-				if ( ! $wpdb->query( $wpdb->prepare( "DROP TABLE IF EXISTS %1s", [ $migration_object->getTableName() ] ) ) ) {
-					throw new Exception( $wpdb->last_error );
+				if ( ! $wpdb->query( "DROP TABLE IF EXISTS `" . $table_name . "`" ) ) {
+					throw new Exception( esc_html( $wpdb->last_error ) );
 				}
 			} else {
 				$columns = $blueprint->getColumns();
 				foreach ( $columns as $column ) {
-					if ( ! $wpdb->query( $wpdb->prepare( "ALTER TABLE `%1s` %1s", [
-						$migration_object->getTableName(),
-						$column->toString()
-					] ) ) ) {
-						throw new Exception( $wpdb->last_error );
+					if ( ! $wpdb->query( "ALTER TABLE `" . $table_name . "` " . $column->toString() ) ) {
+						throw new Exception( esc_html( $wpdb->last_error ) );
 					}
 				}
 			}
@@ -251,7 +264,7 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 			global $wpdb;
 
 			$env        = ( new KMEnv( $this->context ) )->getEnv();
-			$table_name = $wpdb->prefix . trim( $env['TABLE_PREFIX'] ) . 'migrations';
+			$table_name = $this->sanitize_identifier( $wpdb->prefix . trim( $env['TABLE_PREFIX'] ) . 'migrations' );
 
 			$blueprint = new KMBlueprint();
 			$blueprint->id();
@@ -260,10 +273,8 @@ if ( ! class_exists( 'KMMigrationManager' ) ) {
 			$blueprint->timestamps();
 			$additions = $blueprint->toString();
 
-			if ( ! $wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS `%1s` ( $additions )", [
-				$table_name,
-			] ) ) ) {
-				throw new Exception( $wpdb->last_error );
+			if ( ! $wpdb->query( "CREATE TABLE IF NOT EXISTS `" . $table_name . "` ( " . $additions . " )" ) ) {
+				throw new Exception( esc_html( $wpdb->last_error ) );
 			}
 		}
 	}

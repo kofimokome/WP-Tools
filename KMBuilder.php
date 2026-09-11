@@ -3,7 +3,7 @@
 /**
  * @author kofimokome
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMBuilder' ) ) {
 
 	#[AllowDynamicProperties]
@@ -35,6 +35,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 			global $wpdb;
 
 			if ( $context == '' ) {
+				// todo: find another way to the the file from which the codes ran. Using debug_backtrace() for now as the only method I have found
 				$t = debug_backtrace();
 //				var_dump( "called from {$t[0]['file']}" );
 
@@ -59,7 +60,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		public function truncate() {
 			global $wpdb;
 			$table_name = $this->table_name;
-			$wpdb->query( "TRUNCATE TABLE $table_name" );
+			$wpdb->query( "TRUNCATE TABLE " . esc_sql( $table_name ) );
 		}
 
 		/**
@@ -146,7 +147,8 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 				}
 				$additions = rtrim( $additions, ', ' ); // removes the last comma (,) from the select statement
 			}
-			$total_query = "SELECT COUNT(*) as total FROM `{$db_name}` {$additions}"; // added here becuse we do not need the orderby section in the query
+			// $db_name is the table name and $additions are additional sql queries to run. We can't add them as placeholders in the query
+			$total_query = "SELECT COUNT(*) as total FROM `{$db_name}` {$additions}"; // added here because we do not need the orderby section added in the if statement below in the query
 
 			if ( sizeof( $this->orderBys ) > 0 ) {
 				foreach ( $this->orderBys as $order_by ) { // ordering will be the last section of the query
@@ -157,6 +159,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 
 			if ( $this->per_page > 0 || $this->per_page == - 1 ) { // check if the query requires pagination
 				$total = intval( $wpdb->get_var( $total_query ) );
+
 				$query .= $additions;
 
 				// prevent calculating offset for negative one
@@ -182,7 +185,7 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 				$query .= $additions;
 				$data  = $this->getResults( $query );
 			}
- 			// reset query variables;
+			// reset query variables;
 			$this->where        = '';
 			$this->orderBys     = [];
 			$this->groupBys     = [];
@@ -265,9 +268,10 @@ if ( ! class_exists( 'KMBuilder' ) ) {
 		 * @author kofimokome
 		 * @since 1.0.0
 		 */
-		public function getResults( $query ) {
+		private function getResults( $query_safe ) {
 			global $wpdb;
-			$results = $wpdb->get_results( $query );
+			// $query is already formatted and prepared
+			$results = $wpdb->get_results( $query_safe );
 			$data    = [];
 			if ( $results ) {
 				if ( trim( $this->join ) == '' ) {

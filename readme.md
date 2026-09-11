@@ -9,11 +9,11 @@ to find out how to use these tools.
 ## 1. Installation
 
 1. Copy the extracted folder to your plugin directory
-2. Copy the .env.example to the root of your plugin and rename the file to .env. Then update the values in the
-   .env
+2. Copy the config.env.example to the root of your plugin and rename the file to config.env. Then update the values in the
+   config.env
 3. If you would like to use the `wptools` command line interface:
     1. Copy/move the `wptools` file to the root of your plugin
-    2. In your `.env` file, make sure to set the `WPTOOLS_DIR` and `NAMESPACE` variables.
+    2. In your `config.env` file, make sure to set the `WPTOOLS_DIR` and `NAMESPACE` variables.
     3. cd to the root of your plugin and run `php wptools` for the list of commands.
 
 ```bash

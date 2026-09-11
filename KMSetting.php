@@ -7,7 +7,7 @@
  * @version 1.0.2
  * @author kofi mokome
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMSetting' ) ) {
 
 	#[AllowDynamicProperties]
@@ -118,7 +118,7 @@ if ( ! class_exists( 'KMSetting' ) ) {
 					break;
 				case 'checkbox':
 					$state = get_option( $id ) == 'on' ? 'checked' : '';
-					echo "<p><input type='checkbox' name='" . esc_attr( $id ) . "' id='" . esc_attr( $id ) . "' " . $state . " class='" . esc_attr( $input_class ) . "'" . ( $read_only ? 'onclick="return false;"' : '' ) . ( $disabled ? ' disabled' : '' ) . "></p>";
+					echo "<p><input type='checkbox' name='" . esc_attr( $id ) . "' id='" . esc_attr( $id ) . "' " . esc_attr($state) . " class='" . esc_attr( $input_class ) . "'" . ( $read_only ? 'onclick="return false;"' : '' ) . ( $disabled ? ' disabled' : '' ) . "></p>";
 					echo "<strong>" . wp_kses_post( $tip ) . "</strong>";
 					break;
 				case 'select':

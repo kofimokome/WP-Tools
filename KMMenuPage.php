@@ -7,6 +7,7 @@
  * @version 1.0.4
  * @author kofi mokome
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMMenuPage' ) ) {
 	#[AllowDynamicProperties]
 	class KMMenuPage {

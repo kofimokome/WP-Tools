@@ -2,7 +2,7 @@
 /**
  * @author kofimokome
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! class_exists( 'KMRoute' ) ) {
 
 	class KMRoute {

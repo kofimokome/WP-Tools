@@ -12,6 +12,7 @@ function make_migration( string $migration_name, $table_name = '', $is_update = 
 	global $env;
 	global $plugin_root_dir;
 	if ( ! isset( $env['MIGRATIONS_DIR'] ) ) {
+		// This echo runs on the command line. Core WordPress escape functions are not available
 		echo( "\033[31mERROR!: The migrations directory is not set. Please set it in the .env file\033[39m \n" );
 		exit();
 	}
@@ -19,6 +20,7 @@ function make_migration( string $migration_name, $table_name = '', $is_update = 
 	$migrations_dir = $plugin_root_dir . $env['MIGRATIONS_DIR'];
 
 	if ( ! is_dir( $migrations_dir ) ) {
+		// This echo runs on the command line. Core WordPress escape functions are not available
 		echo( "\033[31mERROR!: The migrations directory {$env['MIGRATIONS_DIR']} does not exist. Please create it first\033[39m \n" );
 		exit();
 	}
@@ -31,6 +33,8 @@ function make_migration( string $migration_name, $table_name = '', $is_update = 
 	// create a file in the migration folder with the syntax YYYY_MM_DD_HHMMSS_migration_name.php
 	$file_name = gmdate( 'Y_m_d_His' ) . '_' . $migration_name . '.php';
 	$file_path = $migrations_dir . '/' . $file_name;
+
+	// WP_Filesystem is not available since this runs on the terminal
 	$file      = fopen( $file_path, 'w' );
 
 	// convert the migration name to a valid class name eg from add_test_to_users_table to AddTestToUsersTable
@@ -82,11 +86,15 @@ class ' . $migration_class_name . ' extends KMMigration {
 
 ';
 	}
+	// WP_Filesystem is not available since this runs on the terminal
 	if ( fwrite( $file, $migration_template ) ) {
+		// This echo runs on the command line. Core WordPress escape functions are not available
 		echo( "\033[32m\033[1mMigration $file_path created successfully! \033[0m \033[39m \n" );
 	} else {
+		// This echo runs on the command line. Core WordPress escape functions are not available
 		echo( "\033[31mERROR!: Could not create the migration file. Please check your file permissions.\033[39m \n" );
 	};
 
+	// WP_Filesystem is not available since this runs on the terminal
 	fclose( $file );
 }
